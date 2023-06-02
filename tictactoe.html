@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <title>Austin Chang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>  
+    <style>
+    #gamebutton {
+      height: 100%;
+      width: 100%;
+      font-size: 16vmin;
+      font-weight: bolder;
+    }
+
+    @media (max-width: 1600px) {
+        #gamebutton {
+            font-size: 6vmin;
+            font-weight: bolder;
+
+        }
+    }
+
+    @media (max-width: 400px) {
+        #gamebutton {
+            font-size: 2vmin;
+        }
+    }
+
+    .gamesection {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    td {
+        padding: 0;
+        width: 33%;
+        height: 33%;
+    }
+
+    .winner {
+        height: 100%;
+        width: 100%;
+        font-size: 16vmin;
+        font-weight: bolder;
+        color: yellow
+    }
+    </style>  
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="font-size: 30px !important;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link" id="homeURL" href="{% url 'index' %}">Home</a>
+            <a class="nav-item nav-link" id="projectsURL" href="{% url 'projects' %}">Projects</a>
+            <a class="nav-item nav-link" id="interestsURL" href="{% url 'interests' %}">Interests</a>
+          </div>
+        </div>
+    </nav>
+    <div class="bg-dark text-white">
+      <section class="text-center container" style="padding-top: 65px; padding-bottom: 2%;">
+          <div class="display-1">TIC TAC TOE</div>
+      </section>
+  </div>
+  
+  <section class="text-center container-fluid gamesection">
+    <div class= "row justify-content-center">
+      <div class="display-4">PLAY</div>
+      <table class="table table-lg table-responsive" style="width: 50vw; height: 50vw;">
+        <tbody>
+          <tr>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block topleft" id="gamebutton"></button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block topcenter" id="gamebutton"></button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block topright" id="gamebutton"></button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block middleleft" id="gamebutton"></button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block middlecenter" id="gamebutton"></button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block middleright" id="gamebutton"></button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block bottomleft" id="gamebutton"></button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block bottomcenter" id="gamebutton"></button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark btn-lg btn-block bottomright" id="gamebutton"></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <button type="button" id="restartbutton" class="btn btn-lg btn-secondary restartbutton">Play Again</button>
+    </div>
+  </section>
+    <script>
+    let turnNumber = 0;
+    let turn = '';
+    let winner = 0;
+    let winnerColor = "yellow";
+
+    const gamebuttons = [];
+    gamebuttons[0] = document.querySelector(".topleft");
+    gamebuttons[1] = document.querySelector(".topcenter");
+    gamebuttons[2] = document.querySelector(".topright");
+    gamebuttons[3] = document.querySelector(".middleleft");
+    gamebuttons[4] = document.querySelector(".middlecenter");
+    gamebuttons[5] = document.querySelector(".middleright");
+    gamebuttons[6] = document.querySelector(".bottomleft");
+    gamebuttons[7] = document.querySelector(".bottomcenter");
+    gamebuttons[8] = document.querySelector(".bottomright");
+
+    const header = document.querySelector(".display-4");
+
+    function determineTurn() {
+      if (turnNumber % 2 == 0) {
+        turn = 'X';
+        header.innerHTML = "Player O turn";
+      } else {
+        turn = 'O';
+        header.innerHTML = "Player X turn";
+      }
+    }
+
+    function celebrateWinner(box1, box2, box3) {
+      box1.classList.add("winner");
+      box2.classList.add("winner");
+      box3.classList.add("winner");
+      header.innerHTML = "Player " + turn + " is the winner!" }
+
+    function findWinner() { 
+      var topleft = document.querySelector(".topleft");
+      var topcenter = document.querySelector(".topcenter");
+      var topright = document.querySelector(".topright");
+      var middleleft = document.querySelector(".middleleft");
+      var middlecenter = document.querySelector(".middlecenter");
+      var middleright = document.querySelector(".middleright");
+      var bottomleft = document.querySelector(".bottomleft");
+      var bottomcenter = document.querySelector(".bottomcenter");
+      var bottomright = document.querySelector(".bottomright");
+
+      if (topleft.innerHTML !== "" && topleft.innerHTML === middleleft.innerHTML &&  middleleft.innerHTML === bottomleft.innerHTML) {
+        celebrateWinner(topleft, middleleft, bottomleft);
+      } else if (topcenter.innerHTML !== ""  && topcenter.innerHTML === middlecenter.innerHTML && middlecenter.innerHTML === bottomcenter.innerHTML) {
+        celebrateWinner(topcenter, middlecenter, bottomcenter);
+      } else if (topright.innerHTML !== "" && topright.innerHTML === middleright.innerHTML && middleright.innerHTML === bottomright.innerHTML) {
+        celebrateWinner(topright, middleright, bottomright);
+      } else if (topleft.innerHTML !== "" && topleft.innerHTML === topcenter.innerHTML && topcenter.innerHTML === topright.innerHTML) {
+        celebrateWinner(topleft, topcenter, topright);
+      } else if (middleleft.innerHTML !== "" && middleleft.innerHTML === middlecenter.innerHTML && middlecenter.innerHTML === middleright.innerHTML) {
+        celebrateWinner(middleleft, middlecenter, middleright);
+      } else if (bottomleft.innerHTML !== "" && bottomleft.innerHTML === bottomcenter.innerHTML && bottomcenter.innerHTML === bottomright.innerHTML) {
+        celebrateWinner(bottomleft, bottomcenter, bottomright);
+      } else if (topleft.innerHTML !== "" && topleft.innerHTML === middlecenter.innerHTML && middlecenter.innerHTML === bottomright.innerHTML) {
+        celebrateWinner(topleft, middlecenter, bottomright);
+      } else if (topright.innerHTML !== "" && topright.innerHTML === middlecenter.innerHTML && middlecenter.innerHTML === bottomright.innerHTML) {
+        celebrateWinner(topright, middlecenter, bottomleft);
+      }
+    }
+
+    // Play once buttons are pressed
+    for (var i = 0; i < gamebuttons.length; i++) {
+      gamebuttons[i].onclick = function() {
+        determineTurn();
+        if (this.innerHTML !== "X" && this.innerHTML !== "O") {
+          this.innerHTML = turn;
+          findWinner();
+        }
+      turnNumber++;
+      };
+    }
+
+    // Restart functionality
+    document.getElementById('restartbutton').addEventListener('click', restart);
+    function restart() {
+      for (var i = 0; i < gamebuttons.length; i++) {
+        gamebuttons[i].classList.remove("winner");
+        gamebuttons[i].innerHTML = "";
+        header.innerHTML = "Play";
+      }
+
+    }
+    </script>
+</body>
+</html>
