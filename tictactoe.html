@@ -26,12 +26,6 @@
         }
     }
 
-    @media (max-width: 400px) {
-        #gamebutton {
-            font-size: 2vmin;
-        }
-    }
-
     .gamesection {
         padding-top: 40px;
         padding-bottom: 40px;
@@ -76,38 +70,38 @@
   <section class="text-center container-fluid gamesection">
     <div class= "row justify-content-center">
       <div class="display-4">PLAY</div>
-      <table class="table table-lg table-responsive" style="width: 50vw; height: 50vw;">
+      <table class="table table-responsive table-lg" style="width: 50vw; height: 50vw;">
         <tbody>
           <tr>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block topleft" id="gamebutton"></button>
             </td>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block topcenter" id="gamebutton"></button>
             </td>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block topright" id="gamebutton"></button>
             </td>
           </tr>
           <tr>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block middleleft" id="gamebutton"></button>
             </td>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block middlecenter" id="gamebutton"></button>
             </td>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block middleright" id="gamebutton"></button>
             </td>
           </tr>
           <tr>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block bottomleft" id="gamebutton"></button>
             </td>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block bottomcenter" id="gamebutton"></button>
             </td>
-            <td>
+            <td class="col-md-4">
               <button type="button" class="btn btn-dark btn-lg btn-block bottomright" id="gamebutton"></button>
             </td>
           </tr>
@@ -118,11 +112,9 @@
       <button type="button" id="restartbutton" class="btn btn-lg btn-secondary restartbutton">Play Again</button>
     </div>
   </section>
-    <script>
+  <script>
     let turnNumber = 0;
     let turn = '';
-    let winner = 0;
-    let winnerColor = "yellow";
 
     const gamebuttons = [];
     gamebuttons[0] = document.querySelector(".topleft");
@@ -151,7 +143,21 @@
       box1.classList.add("winner");
       box2.classList.add("winner");
       box3.classList.add("winner");
-      header.innerHTML = "Player " + turn + " is the winner!" }
+      gamebuttons.forEach(button => {
+        button.disabled = false;
+      });
+      // Disable all buttons except the winning ones
+      gamebuttons.forEach(button => {
+        if (
+          button !== box1 &&
+          button !== box2 &&
+          button !== box3
+        ) {
+          button.disabled = true;
+        }
+      });
+      header.innerHTML = "Player " + turn + " is the winner!";
+    }
 
     function findWinner() { 
       var topleft = document.querySelector(".topleft");
@@ -178,33 +184,50 @@
         celebrateWinner(bottomleft, bottomcenter, bottomright);
       } else if (topleft.innerHTML !== "" && topleft.innerHTML === middlecenter.innerHTML && middlecenter.innerHTML === bottomright.innerHTML) {
         celebrateWinner(topleft, middlecenter, bottomright);
-      } else if (topright.innerHTML !== "" && topright.innerHTML === middlecenter.innerHTML && middlecenter.innerHTML === bottomright.innerHTML) {
+      } else if (topright.innerHTML !== "" && topright.innerHTML === middlecenter.innerHTML && middlecenter.innerHTML === bottomleft.innerHTML) {
         celebrateWinner(topright, middlecenter, bottomleft);
+      } else if (
+        topleft.innerHTML !== "" &&
+        topcenter.innerHTML !== "" &&
+        topright.innerHTML !== "" &&
+        middleleft.innerHTML !== "" &&
+        middlecenter.innerHTML !== "" &&
+        middleright.innerHTML !== "" &&
+        bottomleft.innerHTML !== "" &&
+        bottomcenter.innerHTML !== "" &&
+        bottomright.innerHTML !== ""
+      ) {
+        header.innerHTML = "It's a tie!";
       }
     }
 
-    // Play once buttons are pressed
-    for (var i = 0; i < gamebuttons.length; i++) {
-      gamebuttons[i].onclick = function() {
+    function handleClick() {
+      if (this.innerHTML !== "X" && this.innerHTML !== "O") {
         determineTurn();
-        if (this.innerHTML !== "X" && this.innerHTML !== "O") {
-          this.innerHTML = turn;
-          findWinner();
-        }
-      turnNumber++;
-      };
+        this.innerHTML = turn;
+        turnNumber++;
+        this.disabled = true; // Disable the button after it has been clicked
+        findWinner();
+      }
     }
 
+    // Add event listeners to the game buttons
+    gamebuttons.forEach((button) => {
+      button.addEventListener("click", handleClick);
+    });
+
     // Restart functionality
-    document.getElementById('restartbutton').addEventListener('click', restart);
+    document.getElementById("restartbutton").addEventListener("click", restart);
     function restart() {
       for (var i = 0; i < gamebuttons.length; i++) {
         gamebuttons[i].classList.remove("winner");
         gamebuttons[i].innerHTML = "";
-        header.innerHTML = "Play";
+        gamebuttons[i].disabled = false; // Enable all buttons
       }
-
+      turnNumber = 0;
+      turn = "";
+      header.innerHTML = "Play";
     }
-    </script>
+  </script>
 </body>
 </html>
